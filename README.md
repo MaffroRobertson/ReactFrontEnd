@@ -1,16 +1,103 @@
-# React + Vite
+# Personal Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern personal website built with React and Vite, featuring three main sections:
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🏠 Home Page
+- Clean, modern design with a sidebar navigation
+- Overview cards showcasing different sections
+- Gradient hero section with welcoming message
 
-## React Compiler
+### 👤 About Me Page
+- Bio section to share your story
+- Skills & Expertise showcase
+- Social links section (GitHub, LinkedIn, Email, CV)
+- Interests & Hobbies list
+- Fully customizable template
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🤿 Diving Log Manager
+- **Add Dives**: Form to log dive details including:
+  - Date, dive site, depth, duration
+  - Water temperature and visibility
+  - Notes section for observations
+- **Add Dive Sites**: Form to catalog dive locations with:
+  - Site name, location, maximum depth
+  - GPS coordinates
+  - Site description
+- **View Dives**: Display all logged dives in card format
+- **View Sites**: Display all dive sites with details
+- Ready for API integration with placeholder fetch calls
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Installation
+```bash
+npm install
+```
+
+### Development
+```bash
+npm run dev
+```
+
+### Build
+```bash
+npm run build
+```
+
+### Lint
+```bash
+npm run lint
+```
+
+### Preview Production Build
+```bash
+npm run preview
+```
+
+## Technology Stack
+
+- **React 19** - UI framework
+- **Vite** - Build tool and dev server
+- **React Router DOM** - Client-side routing
+- **CSS3** - Styling with modern gradients and animations
+
+## Customization
+
+### About Me Page
+Edit `/src/pages/AboutMe.jsx` to update:
+- Social media links (GitHub, LinkedIn, etc.)
+- Bio information
+- Skills list
+- Interests and hobbies
+
+### Diving API Integration
+Edit `/src/pages/Diving.jsx` to connect your API:
+- Update `handleDiveSubmit` function with your API endpoint
+- Update `handleSiteSubmit` function with your API endpoint
+- Add GET requests to fetch existing data on component mount
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── Sidebar.jsx       # Navigation sidebar
+│   └── Sidebar.css
+├── pages/
+│   ├── MainPage.jsx      # Home page
+│   ├── AboutMe.jsx       # About me page
+│   └── Diving.jsx        # Diving log manager
+├── styles/
+│   ├── MainPage.css
+│   ├── AboutMe.css
+│   └── Diving.css
+├── App.jsx               # Main app component with routing
+└── main.jsx             # Entry point
+```
+
+## License
+
+This project is open source and available for personal use.
+
