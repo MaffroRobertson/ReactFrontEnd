@@ -166,11 +166,15 @@ function Diving() {
                   <div className="cards-grid">
                     {dives.map((dive) => {
                       const enrichedDive = enrichDiveWithSiteInfo(dive);
+                      const diveDate = dive.date ? new Date(dive.date) : null;
+                      const formattedDate = diveDate && !isNaN(diveDate.getTime()) 
+                        ? diveDate.toLocaleDateString() 
+                        : 'Date not available';
                       return (
                         <div key={dive.id} className="dive-card">
                           <h3>{enrichedDive.siteName}</h3>
                           <div className="dive-details">
-                            <p><strong>Date:</strong> {new Date(dive.date).toLocaleDateString()}</p>
+                            <p><strong>Date:</strong> {formattedDate}</p>
                             <p><strong>Max Depth:</strong> {dive.maxDepth}m</p>
                             <p><strong>Duration:</strong> {dive.duration} min</p>
                             {dive.notes && <p><strong>Notes:</strong> {dive.notes}</p>}
@@ -190,18 +194,25 @@ function Diving() {
                   <p className="empty-state">No dive sites added yet. {error ? 'Check API connection.' : 'Add your first site!'}</p>
                 ) : (
                   <div className="cards-grid">
-                    {diveSites.map((site) => (
-                      <div key={site.id} className="dive-card">
-                        <h3>{site.name}</h3>
-                        <div className="dive-details">
-                          <p><strong>Location:</strong> {site.location}</p>
-                          {site.experienceLevel && (
-                            <p><strong>Experience Level:</strong> {site.experienceLevel.name || site.experienceLevel}</p>
-                          )}
-                          {site.description && <p><strong>Description:</strong> {site.description}</p>}
+                    {diveSites.map((site) => {
+                      const experienceLevelName = site.experienceLevel 
+                        ? (typeof site.experienceLevel === 'object' && site.experienceLevel.name 
+                          ? site.experienceLevel.name 
+                          : typeof site.experienceLevel === 'string' ? site.experienceLevel : 'Unknown')
+                        : null;
+                      return (
+                        <div key={site.id} className="dive-card">
+                          <h3>{site.name}</h3>
+                          <div className="dive-details">
+                            <p><strong>Location:</strong> {site.location}</p>
+                            {experienceLevelName && (
+                              <p><strong>Experience Level:</strong> {experienceLevelName}</p>
+                            )}
+                            {site.description && <p><strong>Description:</strong> {site.description}</p>}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
