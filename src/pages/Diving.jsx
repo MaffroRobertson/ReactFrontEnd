@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Diving.css';
+import { login, fetchDives, fetchDiveSites } from '../utils/apiService';
 
 function Diving() {
   const [dives, setDives] = useState([]);
   const [diveSites, setDiveSites] = useState([]);
   const [activeTab, setActiveTab] = useState('addDive');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Form states for adding dives
   const [diveForm, setDiveForm] = useState({
@@ -25,6 +28,35 @@ function Diving() {
     description: '',
     coordinates: ''
   });
+
+  // Effect to handle authentication and initial data fetching
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Login to get authentication token
+        await login();
+        
+        // Fetch dives and dive sites
+        const [divesData, sitesData] = await Promise.all([
+          fetchDives(),
+          fetchDiveSites()
+        ]);
+        
+        setDives(divesData);
+        setDiveSites(sitesData);
+      } catch (err) {
+        console.error('Error initializing data:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, []);
 
   const handleDiveSubmit = async (e) => {
     e.preventDefault();
@@ -98,6 +130,19 @@ function Diving() {
         <h1>🤿 Diving Log Manager</h1>
         <p>Track your dives and manage dive sites</p>
       </div>
+
+      {isLoading && (
+        <div className="loading-message">
+          <p>Loading data...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="error-message">
+          <p>⚠️ Error: {error}</p>
+          <p>Using local storage mode. Data will not be persisted to the server.</p>
+        </div>
+      )}
 
       <div className="tabs">
         <button 
