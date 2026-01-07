@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Diving.css';
+import { login, fetchDives, fetchDiveSites } from '../utils/apiService';
 
 function Diving() {
   const [dives, setDives] = useState([]);
   const [diveSites, setDiveSites] = useState([]);
   const [activeTab, setActiveTab] = useState('addDive');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Form states for adding dives
   const [diveForm, setDiveForm] = useState({
@@ -25,6 +28,51 @@ function Diving() {
     description: '',
     coordinates: ''
   });
+
+  // Effect to handle authentication and initial data fetching
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Login to get authentication token
+        await login();
+        
+        // Fetch dives and dive sites with partial failure support
+        const results = await Promise.allSettled([
+          fetchDives(),
+          fetchDiveSites()
+        ]);
+        
+        // Handle dives result
+        if (results[0].status === 'fulfilled') {
+          setDives(results[0].value);
+        } else {
+          console.error('Failed to fetch dives:', results[0].reason);
+        }
+        
+        // Handle dive sites result
+        if (results[1].status === 'fulfilled') {
+          setDiveSites(results[1].value);
+        } else {
+          console.error('Failed to fetch dive sites:', results[1].reason);
+        }
+        
+        // Set error if both failed
+        if (results[0].status === 'rejected' && results[1].status === 'rejected') {
+          setError('Failed to fetch data from the server');
+        }
+      } catch (err) {
+        console.error('Error initializing data:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, []);
 
   const handleDiveSubmit = async (e) => {
     e.preventDefault();
@@ -98,6 +146,19 @@ function Diving() {
         <h1>🤿 Diving Log Manager</h1>
         <p>Track your dives and manage dive sites</p>
       </div>
+
+      {isLoading && (
+        <div className="loading-message">
+          <p>Loading data...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="error-message">
+          <p>⚠️ Error: {error}</p>
+          <p>Using local storage mode. Data will not be persisted to the server.</p>
+        </div>
+      )}
 
       <div className="tabs">
         <button 
