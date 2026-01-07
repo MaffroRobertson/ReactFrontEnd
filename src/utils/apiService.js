@@ -78,7 +78,7 @@ async function authenticatedFetch(endpoint, options = {}) {
  */
 export async function fetchDives() {
   try {
-    const response = await authenticatedFetch('/dives', { method: 'GET' });
+    const response = await authenticatedFetch('/dives');
     const data = await response.json();
     return data;
   } catch (error) {
@@ -94,7 +94,7 @@ export async function fetchDives() {
  */
 export async function fetchDiveSites() {
   try {
-    const response = await authenticatedFetch('/diveSites', { method: 'GET' });
+    const response = await authenticatedFetch('/diveSites');
     const data = await response.json();
     return data;
   } catch (error) {
