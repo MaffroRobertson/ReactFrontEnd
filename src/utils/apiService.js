@@ -41,31 +41,44 @@ export async function login() {
 }
 
 /**
+ * Helper function to create authenticated fetch requests
+ * @param {string} endpoint - The API endpoint to call
+ * @param {object} options - Fetch options
+ * @returns {Promise<Response>} The fetch response
+ * @throws {Error} If token is missing or fetch fails
+ */
+async function authenticatedFetch(endpoint, options = {}) {
+  if (!authToken) {
+    throw new Error('No authentication token available. Please login first.');
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}`,
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication failed. Please login again.');
+    }
+    throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+  }
+
+  return response;
+}
+
+/**
  * Fetch all dives with authentication
  * @returns {Promise<Array>} Array of dive objects
  * @throws {Error} If fetching fails or token is missing
  */
 export async function fetchDives() {
-  if (!authToken) {
-    throw new Error('No authentication token available. Please login first.');
-  }
-
   try {
-    const response = await fetch(`${API_BASE_URL}/dives`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Authentication failed. Please login again.');
-      }
-      throw new Error(`Failed to fetch dives: ${response.status} ${response.statusText}`);
-    }
-
+    const response = await authenticatedFetch('/dives', { method: 'GET' });
     const data = await response.json();
     return data;
   } catch (error) {
@@ -80,26 +93,8 @@ export async function fetchDives() {
  * @throws {Error} If fetching fails or token is missing
  */
 export async function fetchDiveSites() {
-  if (!authToken) {
-    throw new Error('No authentication token available. Please login first.');
-  }
-
   try {
-    const response = await fetch(`${API_BASE_URL}/diveSites`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Authentication failed. Please login again.');
-      }
-      throw new Error(`Failed to fetch dive sites: ${response.status} ${response.statusText}`);
-    }
-
+    const response = await authenticatedFetch('/diveSites', { method: 'GET' });
     const data = await response.json();
     return data;
   } catch (error) {

@@ -39,14 +39,30 @@ function Diving() {
         // Login to get authentication token
         await login();
         
-        // Fetch dives and dive sites
-        const [divesData, sitesData] = await Promise.all([
+        // Fetch dives and dive sites with partial failure support
+        const results = await Promise.allSettled([
           fetchDives(),
           fetchDiveSites()
         ]);
         
-        setDives(divesData);
-        setDiveSites(sitesData);
+        // Handle dives result
+        if (results[0].status === 'fulfilled') {
+          setDives(results[0].value);
+        } else {
+          console.error('Failed to fetch dives:', results[0].reason);
+        }
+        
+        // Handle dive sites result
+        if (results[1].status === 'fulfilled') {
+          setDiveSites(results[1].value);
+        } else {
+          console.error('Failed to fetch dive sites:', results[1].reason);
+        }
+        
+        // Set error if both failed
+        if (results[0].status === 'rejected' && results[1].status === 'rejected') {
+          setError('Failed to fetch data from the server');
+        }
       } catch (err) {
         console.error('Error initializing data:', err);
         setError(err.message);
