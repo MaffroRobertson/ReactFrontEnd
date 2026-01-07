@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '../config/api';
 import '../styles/Diving.css';
 
 function Diving() {
   const [dives, setDives] = useState([]);
   const [diveSites, setDiveSites] = useState([]);
-  const [activeTab, setActiveTab] = useState('addDive');
+  const [activeTab, setActiveTab] = useState('viewDives');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   // Form states for adding dives
   const [diveForm, setDiveForm] = useState({
@@ -26,56 +29,70 @@ function Diving() {
     coordinates: ''
   });
 
+  // Fetch dives and dive sites on component mount
+  useEffect(() => {
+    fetchDives();
+    fetchDiveSites();
+  }, []);
+
+  const fetchDives = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(API_ENDPOINTS.dives);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch dives: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      setDives(data);
+    } catch (error) {
+      console.error('Error fetching dives:', error);
+      setError(`Failed to load dives: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchDiveSites = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.diveSites);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch dive sites: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      setDiveSites(data);
+    } catch (error) {
+      console.error('Error fetching dive sites:', error);
+      setError(`Failed to load dive sites: ${error.message}`);
+    }
+  };
+
+  // Helper function to get dive site name by ID
+  const getDiveSiteName = (diveSiteId) => {
+    const site = diveSites.find(s => s.id === diveSiteId);
+    return site ? site.name : 'Unknown Site';
+  };
+
+  // Helper function to enrich dive with dive site information
+  const enrichDiveWithSiteInfo = (dive) => {
+    // If the dive already has diveSite populated, use it
+    if (dive.diveSite && dive.diveSite.name) {
+      return { ...dive, siteName: dive.diveSite.name };
+    }
+    // Otherwise, look it up from diveSites array
+    return { ...dive, siteName: getDiveSiteName(dive.diveSiteId) };
+  };
+
   const handleDiveSubmit = async (e) => {
     e.preventDefault();
-    
-    // TODO: Replace with your actual API endpoint
-    // Example: const response = await fetch('YOUR_API_ENDPOINT/dives', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(diveForm)
-    // });
-    
-    // For now, just add to local state
-    setDives([...dives, { ...diveForm, id: Date.now() }]);
-    
-    // Reset form
-    setDiveForm({
-      date: '',
-      site: '',
-      depth: '',
-      duration: '',
-      temperature: '',
-      visibility: '',
-      notes: ''
-    });
-    
-    alert('Dive added successfully! (Connect to your API for persistent storage)');
+    alert('Add dive functionality requires POST endpoint implementation on the API side.');
+    // TODO: Implement POST to API_ENDPOINTS.dives when backend is ready
   };
 
   const handleSiteSubmit = async (e) => {
     e.preventDefault();
-    
-    // TODO: Replace with your actual API endpoint
-    // Example: const response = await fetch('YOUR_API_ENDPOINT/divesites', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(siteForm)
-    // });
-    
-    // For now, just add to local state
-    setDiveSites([...diveSites, { ...siteForm, id: Date.now() }]);
-    
-    // Reset form
-    setSiteForm({
-      name: '',
-      location: '',
-      maxDepth: '',
-      description: '',
-      coordinates: ''
-    });
-    
-    alert('Dive site added successfully! (Connect to your API for persistent storage)');
+    alert('Add dive site functionality requires POST endpoint implementation on the API side.');
+    // TODO: Implement POST to API_ENDPOINTS.diveSites when backend is ready
   };
 
   const handleDiveInputChange = (e) => {
@@ -99,19 +116,14 @@ function Diving() {
         <p>Track your dives and manage dive sites</p>
       </div>
 
+      {error && (
+        <div className="error-message">
+          <p>⚠️ {error}</p>
+          <p>Make sure the Diving API is running at http://localhost:5093</p>
+        </div>
+      )}
+
       <div className="tabs">
-        <button 
-          className={activeTab === 'addDive' ? 'tab active' : 'tab'}
-          onClick={() => setActiveTab('addDive')}
-        >
-          Add Dive
-        </button>
-        <button 
-          className={activeTab === 'addSite' ? 'tab active' : 'tab'}
-          onClick={() => setActiveTab('addSite')}
-        >
-          Add Dive Site
-        </button>
         <button 
           className={activeTab === 'viewDives' ? 'tab active' : 'tab'}
           onClick={() => setActiveTab('viewDives')}
@@ -124,9 +136,78 @@ function Diving() {
         >
           View Sites ({diveSites.length})
         </button>
+        <button 
+          className={activeTab === 'addDive' ? 'tab active' : 'tab'}
+          onClick={() => setActiveTab('addDive')}
+        >
+          Add Dive
+        </button>
+        <button 
+          className={activeTab === 'addSite' ? 'tab active' : 'tab'}
+          onClick={() => setActiveTab('addSite')}
+        >
+          Add Dive Site
+        </button>
       </div>
 
       <div className="tab-content">
+        {isLoading ? (
+          <div className="loading-state">
+            <p>🌊 Loading diving data...</p>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'viewDives' && (
+              <div className="list-container">
+                <h2>Your Dives</h2>
+                {dives.length === 0 ? (
+                  <p className="empty-state">No dives logged yet. {error ? 'Check API connection.' : 'Add your first dive!'}</p>
+                ) : (
+                  <div className="cards-grid">
+                    {dives.map((dive) => {
+                      const enrichedDive = enrichDiveWithSiteInfo(dive);
+                      return (
+                        <div key={dive.id} className="dive-card">
+                          <h3>{enrichedDive.siteName}</h3>
+                          <div className="dive-details">
+                            <p><strong>Date:</strong> {new Date(dive.date).toLocaleDateString()}</p>
+                            <p><strong>Max Depth:</strong> {dive.maxDepth}m</p>
+                            <p><strong>Duration:</strong> {dive.duration} min</p>
+                            {dive.notes && <p><strong>Notes:</strong> {dive.notes}</p>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'viewSites' && (
+              <div className="list-container">
+                <h2>Dive Sites</h2>
+                {diveSites.length === 0 ? (
+                  <p className="empty-state">No dive sites added yet. {error ? 'Check API connection.' : 'Add your first site!'}</p>
+                ) : (
+                  <div className="cards-grid">
+                    {diveSites.map((site) => (
+                      <div key={site.id} className="dive-card">
+                        <h3>{site.name}</h3>
+                        <div className="dive-details">
+                          <p><strong>Location:</strong> {site.location}</p>
+                          {site.experienceLevel && (
+                            <p><strong>Experience Level:</strong> {site.experienceLevel.name || site.experienceLevel}</p>
+                          )}
+                          {site.description && <p><strong>Description:</strong> {site.description}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
         {activeTab === 'addDive' && (
           <div className="form-container">
             <h2>Add New Dive</h2>
@@ -302,68 +383,6 @@ function Diving() {
             </form>
           </div>
         )}
-
-        {activeTab === 'viewDives' && (
-          <div className="list-container">
-            <h2>Your Dives</h2>
-            {dives.length === 0 ? (
-              <p className="empty-state">No dives logged yet. Add your first dive!</p>
-            ) : (
-              <div className="cards-grid">
-                {dives.map((dive) => (
-                  <div key={dive.id} className="dive-card">
-                    <h3>{dive.site}</h3>
-                    <div className="dive-details">
-                      <p><strong>Date:</strong> {dive.date}</p>
-                      <p><strong>Max Depth:</strong> {dive.depth}m</p>
-                      <p><strong>Duration:</strong> {dive.duration} min</p>
-                      {dive.temperature && <p><strong>Temperature:</strong> {dive.temperature}°C</p>}
-                      {dive.visibility && <p><strong>Visibility:</strong> {dive.visibility}m</p>}
-                      {dive.notes && <p><strong>Notes:</strong> {dive.notes}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'viewSites' && (
-          <div className="list-container">
-            <h2>Dive Sites</h2>
-            {diveSites.length === 0 ? (
-              <p className="empty-state">No dive sites added yet. Add your first site!</p>
-            ) : (
-              <div className="cards-grid">
-                {diveSites.map((site) => (
-                  <div key={site.id} className="dive-card">
-                    <h3>{site.name}</h3>
-                    <div className="dive-details">
-                      <p><strong>Location:</strong> {site.location}</p>
-                      <p><strong>Max Depth:</strong> {site.maxDepth}m</p>
-                      {site.coordinates && <p><strong>Coordinates:</strong> {site.coordinates}</p>}
-                      {site.description && <p><strong>Description:</strong> {site.description}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="api-note">
-        <h3>🔧 API Integration</h3>
-        <p>
-          This UI is ready for your API integration. Update the fetch calls in the component
-          to connect to your diving API endpoints for persistent data storage.
-        </p>
-        <ul>
-          <li>POST endpoint for adding dives</li>
-          <li>POST endpoint for adding dive sites</li>
-          <li>GET endpoints for retrieving dives and sites</li>
-          <li>Optional: PUT/DELETE endpoints for editing and removing entries</li>
-        </ul>
       </div>
     </div>
   );
