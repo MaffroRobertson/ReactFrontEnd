@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS } from '../config/api';
 import '../styles/Diving.css';
+import { login, fetchDives, fetchDiveSites } from '../utils/apiService';
 
 function Diving() {
   const [dives, setDives] = useState([]);
   const [diveSites, setDiveSites] = useState([]);
   const [activeTab, setActiveTab] = useState('viewDives');
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('addDive');
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
   // Form states for adding dives
@@ -29,59 +32,50 @@ function Diving() {
     coordinates: ''
   });
 
-  // Fetch dives and dive sites on component mount
+  // Effect to handle authentication and initial data fetching
   useEffect(() => {
-    fetchDives();
-    fetchDiveSites();
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Login to get authentication token
+        await login();
+        
+        // Fetch dives and dive sites with partial failure support
+        const results = await Promise.allSettled([
+          fetchDives(),
+          fetchDiveSites()
+        ]);
+        
+        // Handle dives result
+        if (results[0].status === 'fulfilled') {
+          setDives(results[0].value);
+        } else {
+          console.error('Failed to fetch dives:', results[0].reason);
+        }
+        
+        // Handle dive sites result
+        if (results[1].status === 'fulfilled') {
+          setDiveSites(results[1].value);
+        } else {
+          console.error('Failed to fetch dive sites:', results[1].reason);
+        }
+        
+        // Set error if both failed
+        if (results[0].status === 'rejected' && results[1].status === 'rejected') {
+          setError('Failed to fetch data from the server');
+        }
+      } catch (err) {
+        console.error('Error initializing data:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
   }, []);
-
-  const fetchDives = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(API_ENDPOINTS.dives);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch dives: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      setDives(data);
-    } catch (error) {
-      console.error('Error fetching dives:', error);
-      setError(`Failed to load dives: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchDiveSites = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.diveSites);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch dive sites: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      setDiveSites(data);
-    } catch (error) {
-      console.error('Error fetching dive sites:', error);
-      setError(`Failed to load dive sites: ${error.message}`);
-    }
-  };
-
-  // Helper function to get dive site name by ID
-  const getDiveSiteName = (diveSiteId) => {
-    const site = diveSites.find(s => s.id === diveSiteId);
-    return site ? site.name : 'Unknown Site';
-  };
-
-  // Helper function to enrich dive with dive site information
-  const enrichDiveWithSiteInfo = (dive) => {
-    // If the dive already has diveSite populated, use it
-    if (dive.diveSite && dive.diveSite.name) {
-      return { ...dive, siteName: dive.diveSite.name };
-    }
-    // Otherwise, look it up from diveSites array
-    return { ...dive, siteName: getDiveSiteName(dive.diveSiteId) };
-  };
 
   const handleDiveSubmit = async (e) => {
     e.preventDefault();
@@ -116,10 +110,16 @@ function Diving() {
         <p>Track your dives and manage dive sites</p>
       </div>
 
+      {isLoading && (
+        <div className="loading-message">
+          <p>Loading data...</p>
+        </div>
+      )}
+
       {error && (
         <div className="error-message">
-          <p>⚠️ {error}</p>
-          <p>Make sure the Diving API is running at http://localhost:5093</p>
+          <p>⚠️ Error: {error}</p>
+          <p>Using local storage mode. Data will not be persisted to the server.</p>
         </div>
       )}
 
