@@ -8,8 +8,6 @@ function Diving() {
   const [diveSites, setDiveSites] = useState([]);
   const [activeTab, setActiveTab] = useState('viewDives');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('addDive');
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
   // Form states for adding dives

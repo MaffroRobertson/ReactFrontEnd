@@ -1,6 +1,6 @@
 // API Service for handling all API interactions with authentication
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5093';
 
 let authToken = null;
 
@@ -16,6 +16,7 @@ export async function login() {
       headers: {
         'Content-Type': 'application/json',
       },
+  credentials: 'include',
       body: JSON.stringify({
         username: 'testUser',
         password: 'testPassword',
