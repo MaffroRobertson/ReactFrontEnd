@@ -7,7 +7,7 @@
   text-align: center;
   margin-bottom: 4rem;
   padding: 3rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--ocean-aqua) 0%, var(--ocean-teal) 100%);
   border-radius: 20px;
   color: white;
 }
@@ -44,7 +44,7 @@
 }
 
 .card h2 {
-  color: #667eea;
+  color: var(--ocean-aqua);
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }

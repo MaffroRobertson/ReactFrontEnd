@@ -6,7 +6,7 @@
 .main-content {
   margin-left: 250px;
   flex: 1;
-  background: #f5f7fa;
+  background: var(--ocean-seafoam);
   min-height: 100vh;
 }
 
