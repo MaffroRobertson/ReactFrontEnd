@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MainPage from './pages/MainPage';
@@ -7,10 +7,17 @@ import Diving from './pages/Diving';
 import './App.css';
 
 function App() {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
+
   return (
     <Router>
-      <div className="app-container">
-        <Sidebar />
+      <div
+        className="app-container"
+        style={{ '--sidebar-width': isSidebarCollapsed ? '64px' : '250px' }}
+      >
+        <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<MainPage />} />

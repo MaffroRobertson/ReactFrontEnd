@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Set VITE_API_URL at build time; defaults to the internal Docker service name "api" on port 3000
-        VITE_API_URL: ${VITE_API_URL:-http://api:3000}
+        # Set VITE_API_URL at build time; defaults to the internal Docker service name "api" on port 8080
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
     image: reactproject1_frontend:latest
     ports:
       - "3000:80" # map container nginx:80 to host 3000 for convenience
