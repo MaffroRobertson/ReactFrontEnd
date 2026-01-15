@@ -13,7 +13,7 @@ function Sidebar({ isCollapsed, onToggle }) {
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           onClick={onToggle}
         >
-          {isCollapsed ? '‹' : '‹'}
+          {isCollapsed ? '›' : '‹'}
         </button>
       </div>
       <nav className="sidebar-nav">
@@ -33,10 +33,17 @@ function Sidebar({ isCollapsed, onToggle }) {
           <span>About Me</span>
         </NavLink>
         <NavLink 
-          to="/diving" 
+          to="/dive-log" 
           className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
         >
           <span className="nav-icon">🤿</span>
+          <span>Dive Log</span>
+        </NavLink>
+        <NavLink 
+          to="/diving" 
+          className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+        >
+          <span className="nav-icon">📘</span>
           <span>Diving</span>
         </NavLink>
       </nav>
