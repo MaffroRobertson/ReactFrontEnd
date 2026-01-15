@@ -1,0 +1,109 @@
+.diving-info-page {
+  padding: 3rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: var(--ocean-navy);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.hero-text h1 {
+  margin: 0.25rem 0 0.75rem;
+}
+
+.eyebrow {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--ocean-teal);
+  margin: 0;
+}
+
+.lede {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--ocean-navy);
+}
+
+.hero-card,
+.card,
+.cta-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.hero-card ul,
+.card ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0 0;
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.cta {
+  margin-top: 2rem;
+}
+
+.cta-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cta-button {
+  background: var(--ocean-teal);
+  color: white;
+  padding: 0.9rem 1.4rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .diving-info-page {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .diving-info-page {
+    padding: 1.5rem;
+  }
+
+  .cta-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

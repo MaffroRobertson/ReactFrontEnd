@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import MainPage from './pages/MainPage';
 import AboutMe from './pages/AboutMe';
 import Diving from './pages/Diving';
+import DiveLog from './pages/DiveLog';
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/about" element={<AboutMe />} />
+            <Route path="/dive-log" element={<DiveLog />} />
             <Route path="/diving" element={<Diving />} />
           </Routes>
         </main>
