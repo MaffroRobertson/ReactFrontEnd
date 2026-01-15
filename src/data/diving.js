@@ -41,6 +41,6 @@ export const divingInfo = {
     eyebrow: 'Want to dive together?',
     title: 'Let’s plan a splash',
     body: 'Whether it’s a local shore dive or a wreck mission, I’m always keen to link up with dive buddies.',
-    mailto: 'mailto:Mprobertson95@gmail.com',
+    contactLink: 'mailto:Mprobertson95@gmail.com',
   },
 };
