@@ -2,25 +2,13 @@ import React, { useState, useEffect } from 'react';
 import '../styles/Diving.css';
 import { login, fetchDives, fetchDiveSites } from '../utils/api';
 
-function Diving() {
+function DiveLog() {
   const [dives, setDives] = useState([]);
   const [diveSites, setDiveSites] = useState([]);
   const [activeTab, setActiveTab] = useState('viewDives');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  const enrichDiveWithSiteInfo = (dive) => {
-    if (!diveSites || diveSites.length === 0) {
-      return { ...dive, siteName: dive.site || 'Unknown site' };
-    }
-    const site = diveSites.find((s) => s.id === dive.diveSiteId || s.name === dive.site);
-    return {
-      ...dive,
-      siteName: site?.name || dive.site || 'Unknown site',
-    };
-  };
-  
-  // Form states for adding dives
   const [diveForm, setDiveForm] = useState({
     date: '',
     site: '',
@@ -31,7 +19,6 @@ function Diving() {
     notes: ''
   });
 
-  // Form states for adding dive sites
   const [siteForm, setSiteForm] = useState({
     name: '',
     location: '',
@@ -40,37 +27,29 @@ function Diving() {
     coordinates: ''
   });
 
-  // Effect to handle authentication and initial data fetching
   useEffect(() => {
     const initializeData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        
-        // Login to get authentication token
         await login();
-        
-        // Fetch dives and dive sites with partial failure support
         const results = await Promise.allSettled([
           fetchDives(),
           fetchDiveSites()
         ]);
-        
-        // Handle dives result
+
         if (results[0].status === 'fulfilled') {
           setDives(results[0].value);
         } else {
           console.error('Failed to fetch dives:', results[0].reason);
         }
-        
-        // Handle dive sites result
+
         if (results[1].status === 'fulfilled') {
           setDiveSites(results[1].value);
         } else {
           console.error('Failed to fetch dive sites:', results[1].reason);
         }
-        
-        // Set error if both failed
+
         if (results[0].status === 'rejected' && results[1].status === 'rejected') {
           setError('Failed to fetch data from the server');
         }
@@ -88,13 +67,13 @@ function Diving() {
   const handleDiveSubmit = async (e) => {
     e.preventDefault();
     alert('Add dive functionality requires POST endpoint implementation on the API side.');
-    // TODO: Implement POST to /dives when backend is ready
+    // TODO: Implement POST to API_ENDPOINTS.dives when backend is ready
   };
 
   const handleSiteSubmit = async (e) => {
     e.preventDefault();
     alert('Add dive site functionality requires POST endpoint implementation on the API side.');
-    // TODO: Implement POST to /diveSites when backend is ready
+    // TODO: Implement POST to API_ENDPOINTS.diveSites when backend is ready
   };
 
   const handleDiveInputChange = (e) => {
@@ -111,10 +90,19 @@ function Diving() {
     });
   };
 
+  const enrichDiveWithSiteInfo = (dive) => {
+    if (!diveSites || diveSites.length === 0) return { ...dive, siteName: dive.site || 'Unknown site' };
+    const site = diveSites.find((s) => s.id === dive.diveSiteId || s.name === dive.site);
+    return {
+      ...dive,
+      siteName: site?.name || dive.site || 'Unknown site',
+    };
+  };
+
   return (
     <div className="diving-page">
       <div className="diving-header">
-        <h1>🤿 Diving Log Manager</h1>
+        <h1>🤿 Dive Log</h1>
         <p>Track your dives and manage dive sites</p>
       </div>
 
@@ -407,4 +395,4 @@ function Diving() {
   );
 }
 
-export default Diving;
+export default DiveLog;
