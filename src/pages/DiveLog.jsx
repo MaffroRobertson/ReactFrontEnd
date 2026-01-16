@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Diving.css';
 import { login, fetchDives, fetchDiveSites, fetchExperienceLevels, createDiveSite, createDive } from '../utils/api';
-import { ListHeader, EmptyState, ComboBox, Card, CardGrid, FormField, FormRow, DiveSiteForm, DiveForm } from '../components';
+import { ListHeader, EmptyState, ComboBox, Card, CardGrid, FormField, DiveSiteForm, DiveForm } from '../components';
 
 function DiveLog() {
   const [dives, setDives] = useState([]);
