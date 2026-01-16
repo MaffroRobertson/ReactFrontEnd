@@ -10,7 +10,7 @@ function Diving() {
     <div className="diving-info-page">
       <header className="hero">
         <div className="hero-text">
-          <PageHeader eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.lede} className="hero-text" />
+          <PageHeader eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.lede} />
         </div>
         <Card className="hero-card" title="At a glance">
           <ul>
