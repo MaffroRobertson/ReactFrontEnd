@@ -180,11 +180,29 @@ function DiveLog() {
   };
 
   const enrichDiveWithSiteInfo = (dive) => {
-    if (!diveSites || diveSites.length === 0) return { ...dive, siteName: dive.site || 'Unknown site' };
-    const site = diveSites.find((s) => s.id === dive.diveSiteId || s.name === dive.site);
+    const siteIdFromDive = dive.diveSiteId ?? dive.diveSite?.id ?? dive.siteId ?? dive.site?.id;
+    const siteNameFromDive =
+      typeof dive.diveSite === 'string'
+        ? dive.diveSite
+        : dive.diveSite?.name || dive.siteName || dive.site;
+
+    if (!diveSites || diveSites.length === 0) {
+      return { ...dive, siteName: siteNameFromDive || 'Unknown site' };
+    }
+
+    const site = diveSites.find((s) => {
+      if (siteIdFromDive !== undefined && siteIdFromDive !== null) {
+        return String(s.id) === String(siteIdFromDive);
+      }
+      if (siteNameFromDive) {
+        return s.name?.toLowerCase() === siteNameFromDive.toLowerCase();
+      }
+      return false;
+    });
+
     return {
       ...dive,
-      siteName: site?.name || dive.site || 'Unknown site',
+      siteName: site?.name || siteNameFromDive || 'Unknown site',
     };
   };
 
