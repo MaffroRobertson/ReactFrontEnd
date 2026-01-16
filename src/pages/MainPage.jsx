@@ -1,30 +1,29 @@
 import React from 'react';
 import '../styles/MainPage.css';
+import { Card, CardGrid, PageHeader } from '../components';
 
 function MainPage() {
   return (
     <div className="main-page">
-      <div className="hero-section">
-        <h1>Welcome to My Personal Website</h1>
-        <p className="subtitle">Dive into my world of technology and underwater adventures</p>
-      </div>
-      
-      <div className="content-grid">
-        <div className="card">
-          <h2>👨‍💻 About Me</h2>
+      <PageHeader
+        title="Welcome to My Personal Website"
+        subtitle="Dive into my world of technology and underwater adventures"
+        className="hero-section"
+      />
+
+      <CardGrid className="content-grid">
+        <Card title="👨‍💻 About Me">
           <p>Learn more about my background, skills, and experience. Connect with me on various platforms.</p>
-        </div>
-        
-        <div className="card">
-          <h2>🤿 Diving</h2>
+        </Card>
+
+        <Card title="🤿 Diving">
           <p>Explore my diving adventures and manage dive logs through an interactive API interface.</p>
-        </div>
-        
-        <div className="card">
-          <h2>🚀 Projects</h2>
+        </Card>
+
+        <Card title="🚀 Projects">
           <p>Check out my latest projects and contributions on GitHub.</p>
-        </div>
-      </div>
+        </Card>
+      </CardGrid>
     </div>
   );
 }

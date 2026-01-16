@@ -1,6 +1,7 @@
 import React from 'react';
 import '../styles/DivingInfo.css';
 import { divingInfo } from '../data/diving';
+import { Card, CardGrid, PageHeader } from '../components';
 
 function Diving() {
   const { hero, highlights, gear, plans, cta } = divingInfo;
@@ -9,12 +10,9 @@ function Diving() {
     <div className="diving-info-page">
       <header className="hero">
         <div className="hero-text">
-          <p className="eyebrow">{hero.eyebrow}</p>
-          <h1>{hero.title}</h1>
-          <p className="lede">{hero.lede}</p>
+          <PageHeader eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.lede} className="hero-text" />
         </div>
-        <div className="hero-card">
-          <h3>At a glance</h3>
+        <Card className="hero-card" title="At a glance">
           <ul>
             {hero.atAGlance.map((item) => (
               <li key={item.label}>
@@ -22,39 +20,40 @@ function Diving() {
               </li>
             ))}
           </ul>
-        </div>
+        </Card>
       </header>
 
       <section className="grid">
-        {highlights.map((section) => (
-          <div key={section.title} className="card">
-            <h3>{section.title}</h3>
-            <ul>
-              {section.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <CardGrid className="grid">
+          {highlights.map((section) => (
+            <Card key={section.title} title={section.title}>
+              <ul>
+                {section.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </Card>
+          ))}
+        </CardGrid>
       </section>
 
       <section className="split">
-        <div className="card">
-          <h3>Kit I rely on</h3>
-          <ul>
-            {gear.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="card">
-          <h3>What’s next</h3>
-          <ul>
-            {plans.map((plan) => (
-              <li key={plan}>{plan}</li>
-            ))}
-          </ul>
-        </div>
+        <CardGrid className="split">
+          <Card title="Kit I rely on">
+            <ul>
+              {gear.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </Card>
+          <Card title="What’s next">
+            <ul>
+              {plans.map((plan) => (
+                <li key={plan}>{plan}</li>
+              ))}
+            </ul>
+          </Card>
+        </CardGrid>
       </section>
 
       <section className="cta">
