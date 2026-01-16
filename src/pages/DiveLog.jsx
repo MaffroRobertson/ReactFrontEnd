@@ -116,8 +116,7 @@ function DiveLog() {
     }
   };
 
-  const handleSiteSubmit = async (e) => {
-    e.preventDefault();
+  const validateAndSubmitSite = async (onSuccess) => {
     const errors = {};
     if (!siteForm.name.trim()) errors.name = 'Name is required';
     if (!siteForm.location.trim()) errors.location = 'Location is required';
@@ -143,12 +142,19 @@ function DiveLog() {
         description: ''
       });
       setSiteErrors({});
-      setShowAddSiteForm(false);
-      alert('Dive site added successfully');
+      onSuccess(newSite);
     } catch (submitError) {
       console.error('Error adding dive site:', submitError);
       alert(`Failed to add dive site: ${submitError.message}`);
     }
+  };
+
+  const handleSiteSubmit = async (e) => {
+    e.preventDefault();
+    await validateAndSubmitSite(() => {
+      setShowAddSiteForm(false);
+      alert('Dive site added successfully');
+    });
   };
 
   const handleDiveInputChange = (e) => {
@@ -371,32 +377,13 @@ function DiveLog() {
                             type="button"
                             className="submit-btn"
                             onClick={async () => {
-                              const errors = {};
-                              if (!siteForm.name.trim()) errors.name = 'Name is required';
-                              if (!siteForm.location.trim()) errors.location = 'Location is required';
-                              if (!siteForm.experienceLevelId) errors.experienceLevelId = 'Experience level is required';
-                              setSiteErrors(errors);
-                              if (Object.keys(errors).length > 0) return;
-
-                              try {
-                                const newSite = await createDiveSite({
-                                  name: siteForm.name,
-                                  location: siteForm.location,
-                                  experienceLevelId: Number(siteForm.experienceLevelId),
-                                  description: siteForm.description || null,
-                                });
-                                setDiveSites((prev) => [...prev, newSite]);
-                                setSiteForm({ name: '', location: '', experienceLevelId: '', description: '' });
-                                setSiteErrors({});
+                              await validateAndSubmitSite((newSite) => {
                                 setShowInlineSiteForm(false);
                                 setDiveForm((prev) => ({ ...prev, diveSiteId: newSite.id?.toString() || '' }));
                                 setSiteSearch(newSite.name || '');
                                 setShowSiteDropdown(false);
                                 alert('Dive site added and selected');
-                              } catch (errNewSite) {
-                                console.error('Error adding dive site:', errNewSite);
-                                alert(`Failed to add dive site: ${errNewSite.message}`);
-                              }
+                              });
                             }}
                             style={{ marginTop: '0.5rem' }}
                           >
