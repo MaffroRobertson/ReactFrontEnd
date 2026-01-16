@@ -277,41 +277,64 @@ function DiveLog() {
                       onSubmit={handleDiveSubmit}
                       submitLabel="Add Dive"
                       siteSelector={(
-                        <FormField
-                          label="Dive Site"
-                          required
-                          error={diveErrors.diveSiteId}
-                          htmlFor="diveSiteId"
-                        >
-                          <div className="form-row" style={{ gridTemplateColumns: '1fr auto' }}>
-                            <ComboBox
-                              value={siteSearch}
-                              onChange={(val) => {
-                                setSiteSearch(val);
-                                setDiveForm((prev) => ({ ...prev, diveSiteId: '' }));
-                                if (diveErrors.diveSiteId) {
-                                  setDiveErrors((prev) => ({ ...prev, diveSiteId: undefined }));
-                                }
-                              }}
-                              options={filteredDiveSites}
-                              onSelect={handleSiteSelect}
-                              placeholder="Search and select dive site..."
-                              getKey={(site) => site.id}
-                              getLabel={(site) => site.name}
-                              getSubLabel={(site) => site.location}
-                              error={diveErrors.diveSiteId}
-                              inputProps={{ id: 'diveSiteId', name: 'diveSiteId' }}
-                            />
-                            <button
-                              type="button"
-                              className="submit-btn"
-                              style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}
-                              onClick={() => setShowInlineSiteForm((prev) => !prev)}
-                            >
-                              {showInlineSiteForm ? 'Close new site' : 'Add new site'}
-                            </button>
-                          </div>
-                        </FormField>
+                        <>
+                          <FormField
+                            label="Dive Site"
+                            required
+                            error={diveErrors.diveSiteId}
+                            htmlFor="diveSiteId"
+                          >
+                            <div className="form-row" style={{ gridTemplateColumns: '1fr auto' }}>
+                              <ComboBox
+                                value={siteSearch}
+                                onChange={(val) => {
+                                  setSiteSearch(val);
+                                  setDiveForm((prev) => ({ ...prev, diveSiteId: '' }));
+                                  if (diveErrors.diveSiteId) {
+                                    setDiveErrors((prev) => ({ ...prev, diveSiteId: undefined }));
+                                  }
+                                }}
+                                options={filteredDiveSites}
+                                onSelect={handleSiteSelect}
+                                placeholder="Search and select dive site..."
+                                getKey={(site) => site.id}
+                                getLabel={(site) => site.name}
+                                getSubLabel={(site) => site.location}
+                                error={diveErrors.diveSiteId}
+                                inputProps={{ id: 'diveSiteId', name: 'diveSiteId' }}
+                              />
+                              <button
+                                type="button"
+                                className="submit-btn"
+                                style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}
+                                onClick={() => setShowInlineSiteForm((prev) => !prev)}
+                              >
+                                {showInlineSiteForm ? 'Close new site' : 'Add new site'}
+                              </button>
+                            </div>
+                          </FormField>
+
+                          {showInlineSiteForm && (
+                            <div className="nested-form" style={{ marginTop: '1rem' }}>
+                              <DiveSiteForm
+                                values={siteForm}
+                                errors={siteErrors}
+                                experienceLevels={experienceLevels}
+                                onChange={handleSiteInputChange}
+                                onSubmit={async (e) => {
+                                  e.preventDefault();
+                                  await validateAndSubmitSite((newSite) => {
+                                    setShowInlineSiteForm(false);
+                                    setDiveForm((prev) => ({ ...prev, diveSiteId: newSite.id?.toString() || '' }));
+                                    setSiteSearch(newSite.name || '');
+                                    alert('Dive site added and selected');
+                                  });
+                                }}
+                                submitLabel="Save new site"
+                              />
+                            </div>
+                          )}
+                        </>
                       )}
                     />
                   </div>
