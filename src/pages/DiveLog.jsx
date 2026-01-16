@@ -166,7 +166,7 @@ function DiveLog() {
     const { name, value } = e.target;
     setSiteForm((prev) => ({
       ...prev,
-      [name]: name === 'experienceLevelId' ? value : value
+      [name]: value
     }));
     if (siteErrors[name]) {
       setSiteErrors((prev) => ({ ...prev, [name]: undefined }));
