@@ -77,7 +77,8 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   padding: 0.8rem;
   border: 2px solid #e0e0e0;
@@ -88,15 +89,117 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--ocean-aqua);
+}
+
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.form-group select {
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #5fb8d1 50%),
+    linear-gradient(135deg, #5fb8d1 50%, transparent 50%),
+    linear-gradient(to right, #cfdce3, #cfdce3);
+  background-position: calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px),
+    calc(100% - 40px) 50%;
+  background-size: 10px 10px, 10px 10px, 1px 60%;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.form-group select:hover {
+  border-color: var(--ocean-light-aqua);
+}
+
+.required-asterisk {
+  color: #dc3545;
+  margin-left: 0.2rem;
+  font-weight: 700;
+}
+
+.error-text {
+  color: #dc3545;
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
+}
+
+.combo-container {
+  position: relative;
+  width: 100%;
+}
+
+.combo-input {
+  width: 100%;
+}
+
+.combo-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.combo-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: block;
+}
+
+.combo-item:hover,
+.combo-item:focus {
+  background: #f0f8fb;
+}
+
+.combo-item-title {
+  color: #1f3b4d;
+  font-weight: 600;
+}
+
+.combo-item-sub {
+  color: #6b7c8a;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+.nested-form {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #f9fcfd;
+}
+
+.nested-form .form-group {
+  margin-bottom: 1rem;
 }
 
 .submit-btn {
@@ -121,6 +224,15 @@
   color: var(--ocean-aqua);
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .empty-state {
