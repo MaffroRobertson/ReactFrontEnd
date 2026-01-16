@@ -63,7 +63,7 @@ function Diving() {
             <h3>{cta.title}</h3>
             <p>{cta.body}</p>
           </div>
-          <a className="cta-button" href={cta.mailto}>Reach out</a>
+          <a className="cta-button" href={cta.contactLink}>Reach out</a>
         </div>
       </section>
     </div>
