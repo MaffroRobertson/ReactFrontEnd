@@ -1,49 +1,46 @@
-# Personal Website
+# ReactFrontEnd (Personal Website + Diving Log)
 
-A modern personal website built with React and Vite, featuring three main sections:
+A modern React + Vite front end that serves as a personal website with multiple pages (Home, About) and a diving log feature area. Designed to be easy to customize and ready to connect to an API.
 
 ## Features
 
-### 🏠 Home Page
-- Clean, modern design with a sidebar navigation
-- Overview cards showcasing different sections
-- Gradient hero section with welcoming message
+- **Home page** with navigation and overview content
+- **About Me page** driven by editable data
+- **Diving** section/pages (UI + API utilities) to support logging dives / viewing dive-related info
+- Basic **API client utilities** for backend integration
+- Optional **Docker + Nginx** setup for containerized builds/serving
 
-### 👤 About Me Page
-- Bio section to share your story
-- Skills & Expertise showcase
-- Social links section (GitHub, LinkedIn, Email, CV)
-- Interests & Hobbies list
-- Fully customizable template
+## Tech Stack
 
-### 🤿 Diving Log Manager
-- **Add Dives**: Form to log dive details including:
-  - Date, dive site, depth, duration
-  - Water temperature and visibility
-  - Notes section for observations
-- **Add Dive Sites**: Form to catalog dive locations with:
-  - Site name, location, maximum depth
-  - GPS coordinates
-  - Site description
-- **View Dives**: Display all logged dives in card format
-- **View Sites**: Display all dive sites with details
-- Ready for API integration with placeholder fetch calls
+- **React** (SPA UI)
+- **Vite** (dev server + build tooling)
+- **React Router** (routing)
+- **CSS** (project styles under `src/styles/`)
 
 ## Getting Started
 
-### Installation
+### Prerequisites
+- Node.js (LTS recommended)
+- npm (this repo includes a `package-lock.json`)
+
+### Install
 ```bash
 npm install
 ```
 
-### Development
+### Run locally (development)
 ```bash
 npm run dev
 ```
 
-### Build
+### Build (production)
 ```bash
 npm run build
+```
+
+### Preview the production build
+```bash
+npm run preview
 ```
 
 ### Lint
@@ -51,53 +48,85 @@ npm run build
 npm run lint
 ```
 
-### Preview Production Build
-```bash
-npm run preview
-```
+## Configuration / API
 
-## Technology Stack
-
-- **React 19** - UI framework
-- **Vite** - Build tool and dev server
-- **React Router DOM** - Client-side routing
-- **CSS3** - Styling with modern gradients and animations
+- API-related configuration lives in:
+  - `src/config/api.js`
+  - `src/utils/api/*`
+- See [`API_INTEGRATION.md`](./API_INTEGRATION.md) for notes on wiring the frontend to a backend.
 
 ## Customization
 
-### About Me Page
-Edit `/src/pages/AboutMe.jsx` to update:
-- Social media links (GitHub, LinkedIn, etc.)
-- Bio information
-- Skills list
-- Interests and hobbies
+### Personal content
+- Update About content/data in:
+  - `src/data/aboutMe.js`
+- Page layout/components:
+  - `src/pages/AboutMe.jsx`
 
-### Diving API Integration
-Edit `/src/pages/Diving.jsx` to connect your API:
-- Update `handleDiveSubmit` function with your API endpoint
-- Update `handleSiteSubmit` function with your API endpoint
-- Add GET requests to fetch existing data on component mount
+### Diving pages
+- Pages:
+  - `src/pages/Diving.jsx`
+  - `src/pages/DiveLog.jsx`
+- Data/config:
+  - `src/data/diving.js`
+  - `src/utils/api/diving.js`
 
 ## Project Structure
 
+```text
+.
+├── public/
+│   └── vite.svg
+├── src/
+│   ├── assets/                # Static assets imported by the app
+│   ├── components/
+│   │   ├── Sidebar.jsx
+│   │   └── Sidebar.css
+│   ├── config/
+│   │   └── api.js              # API base/config helpers
+│   ├── data/
+│   │   ├── aboutMe.js          # Data backing the About page
+│   │   └── diving.js           # Data/constants for diving UI
+│   ├── pages/
+│   │   ├── MainPage.jsx        # Home page
+│   │   ├── AboutMe.jsx         # About page
+│   │   ├── Diving.jsx          # Diving landing/feature page
+│   │   └── DiveLog.jsx         # Dive log UI
+│   ├── styles/
+│   │   ├── MainPage.css
+│   │   ├── AboutMe.css
+│   │   ├── Diving.css
+│   │   └── DivingInfo.css
+│   ├── utils/
+│   │   └── api/                # API client + endpoint helpers
+│   │       ├── client.js
+│   │       ├── auth.js
+│   │       ├── diving.js
+│   │       └── index.js
+│   ├── App.jsx                 # Routes + app composition
+│   ├── App.css
+│   ├── main.jsx                # Entry point
+│   └── index.css               # Global styles
+├── Dockerfile                  # Container build (optional)
+├── nginx.conf                  # Nginx config for serving build (optional)
+├── docker-compose.dev.yml      # Dev compose (optional)
+├── docker-compose.frontend.yml # Frontend compose (optional)
+├── vite.config.js
+├── eslint.config.js
+├── index.html
+├── API_INTEGRATION.md
+└── package.json
 ```
-src/
-├── components/
-│   ├── Sidebar.jsx       # Navigation sidebar
-│   └── Sidebar.css
-├── pages/
-│   ├── MainPage.jsx      # Home page
-│   ├── AboutMe.jsx       # About me page
-│   └── Diving.jsx        # Diving log manager
-├── styles/
-│   ├── MainPage.css
-│   ├── AboutMe.css
-│   └── Diving.css
-├── App.jsx               # Main app component with routing
-└── main.jsx             # Entry point
-```
+
+## Docker (optional)
+
+If you’re using the included Docker/Nginx setup, check:
+- `Dockerfile`
+- `nginx.conf`
+- `docker-compose.frontend.yml` / `docker-compose.dev.yml`
+
+Exact commands may vary depending on your intended workflow.
 
 ## License
 
 This project is open source and available for personal use.
-
