@@ -111,6 +111,7 @@ function DiveLog() {
         description: ''
       });
       setSiteErrors({});
+      setShowAddSiteForm(false);
       alert('Dive site added successfully');
     } catch (submitError) {
       console.error('Error adding dive site:', submitError);
