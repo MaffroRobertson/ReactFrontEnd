@@ -10,3 +10,9 @@ export const createDiveSite = (payload) =>
 		body: JSON.stringify(payload),
 		auth: true,
 	});
+export const createDive = (payload) =>
+	requestJson(API_ENDPOINTS.dives, {
+		method: 'POST',
+		body: JSON.stringify(payload),
+		auth: true,
+	});

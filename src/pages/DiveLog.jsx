@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Diving.css';
-import { login, fetchDives, fetchDiveSites, fetchExperienceLevels, createDiveSite } from '../utils/api';
+import { login, fetchDives, fetchDiveSites, fetchExperienceLevels, createDiveSite, createDive } from '../utils/api';
 
 function DiveLog() {
   const [dives, setDives] = useState([]);
@@ -9,17 +9,19 @@ function DiveLog() {
   const [activeTab, setActiveTab] = useState('dives');
   const [showAddDiveForm, setShowAddDiveForm] = useState(false);
   const [showAddSiteForm, setShowAddSiteForm] = useState(false);
+  const [showInlineSiteForm, setShowInlineSiteForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [siteErrors, setSiteErrors] = useState({});
+  const [diveErrors, setDiveErrors] = useState({});
+  const [siteSearch, setSiteSearch] = useState('');
+  const [showSiteDropdown, setShowSiteDropdown] = useState(false);
   
   const [diveForm, setDiveForm] = useState({
+    diveSiteId: '',
     date: '',
-    site: '',
-    depth: '',
     duration: '',
-    temperature: '',
-    visibility: '',
+    maxDepth: '',
     notes: ''
   });
 
@@ -80,8 +82,38 @@ function DiveLog() {
 
   const handleDiveSubmit = async (e) => {
     e.preventDefault();
-    alert('Add dive functionality requires POST endpoint implementation on the API side.');
-    // TODO: Implement POST to API_ENDPOINTS.dives when backend is ready
+
+    const errors = {};
+    if (!diveForm.diveSiteId) errors.diveSiteId = 'Dive site is required';
+    if (!diveForm.date) errors.date = 'Date is required';
+    if (!diveForm.duration || Number(diveForm.duration) <= 0) errors.duration = 'Duration must be greater than 0';
+    if (!diveForm.maxDepth || Number(diveForm.maxDepth) < 1 || Number(diveForm.maxDepth) > 500)
+      errors.maxDepth = 'Max depth must be between 1 and 500';
+
+    setDiveErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    const payload = {
+      diveSiteId: Number(diveForm.diveSiteId),
+      date: diveForm.date,
+      duration: Number(diveForm.duration),
+      maxDepth: Number(diveForm.maxDepth),
+      notes: diveForm.notes || '',
+    };
+
+    try {
+      const newDive = await createDive(payload);
+  setDives((prev) => [...prev, newDive]);
+  setDiveForm({ diveSiteId: '', date: '', duration: '', maxDepth: '', notes: '' });
+  setSiteSearch('');
+  setDiveErrors({});
+  setShowAddDiveForm(false);
+  setShowInlineSiteForm(false);
+      alert('Dive added successfully');
+    } catch (submitError) {
+      console.error('Error adding dive:', submitError);
+      alert(`Failed to add dive: ${submitError.message}`);
+    }
   };
 
   const handleSiteSubmit = async (e) => {
@@ -120,10 +152,14 @@ function DiveLog() {
   };
 
   const handleDiveInputChange = (e) => {
-    setDiveForm({
-      ...diveForm,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setDiveForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+    if (diveErrors[name]) {
+      setDiveErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSiteInputChange = (e) => {
@@ -144,6 +180,19 @@ function DiveLog() {
       ...dive,
       siteName: site?.name || dive.site || 'Unknown site',
     };
+  };
+
+  const filteredDiveSites = siteSearch
+    ? diveSites.filter((site) => site.name.toLowerCase().includes(siteSearch.toLowerCase().trim()))
+    : diveSites;
+
+  const handleSiteSelect = (site) => {
+    setDiveForm((prev) => ({ ...prev, diveSiteId: site.id.toString() }));
+    setSiteSearch(site.name);
+    setShowSiteDropdown(false);
+    if (diveErrors.diveSiteId) {
+      setDiveErrors((prev) => ({ ...prev, diveSiteId: undefined }));
+    }
   };
 
   return (
@@ -169,13 +218,13 @@ function DiveLog() {
       <div className="tabs">
         <button 
           className={activeTab === 'dives' ? 'tab active' : 'tab'}
-          onClick={() => { setActiveTab('dives'); setShowAddDiveForm(false); }}
+          onClick={() => { setActiveTab('dives'); setShowAddDiveForm(false); setShowInlineSiteForm(false); }}
         >
           Dives ({dives.length})
         </button>
         <button 
           className={activeTab === 'diveSites' ? 'tab active' : 'tab'}
-          onClick={() => { setActiveTab('diveSites'); setShowAddSiteForm(false); }}
+          onClick={() => { setActiveTab('diveSites'); setShowAddSiteForm(false); setShowInlineSiteForm(false); }}
         >
           Dive Sites ({diveSites.length})
         </button>
@@ -201,7 +250,163 @@ function DiveLog() {
                   <div className="form-container" style={{ marginTop: '1.5rem' }}>
                     <form onSubmit={handleDiveSubmit}>
                       <div className="form-group">
-                        <label htmlFor="date">Date</label>
+                        <label htmlFor="diveSiteId">Dive Site <span className="required-asterisk">*</span></label>
+                        <div className="form-row" style={{ gridTemplateColumns: '1fr auto' }}>
+                          <div className="combo-container">
+                            <input
+                              type="text"
+                              id="diveSiteId"
+                              name="diveSiteId"
+                              value={siteSearch}
+                              onChange={(e) => {
+                                setSiteSearch(e.target.value);
+                                setShowSiteDropdown(true);
+                                setDiveForm((prev) => ({ ...prev, diveSiteId: '' }));
+                                if (diveErrors.diveSiteId) {
+                                  setDiveErrors((prev) => ({ ...prev, diveSiteId: undefined }));
+                                }
+                              }}
+                              onFocus={() => setShowSiteDropdown(true)}
+                              onBlur={() => setTimeout(() => setShowSiteDropdown(false), 120)}
+                              placeholder="Search and select dive site..."
+                              autoComplete="off"
+                              className={`combo-input ${diveErrors.diveSiteId ? 'error' : ''}`}
+                              aria-autocomplete="list"
+                              aria-expanded={showSiteDropdown}
+                            />
+                            {showSiteDropdown && filteredDiveSites.length > 0 && (
+                              <div className="combo-list" role="listbox">
+                                {filteredDiveSites.map((site) => (
+                                  <button
+                                    key={site.id}
+                                    type="button"
+                                    className="combo-item"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => handleSiteSelect(site)}
+                                  >
+                                    <div className="combo-item-title">{site.name}</div>
+                                    <div className="combo-item-sub">{site.location}</div>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            className="submit-btn"
+                            style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}
+                            onClick={() => setShowInlineSiteForm((prev) => !prev)}
+                          >
+                            {showInlineSiteForm ? 'Close new site' : 'Add new site'}
+                          </button>
+                        </div>
+                        {diveErrors.diveSiteId && <p className="error-text">{diveErrors.diveSiteId}</p>}
+                      </div>
+
+                      {showInlineSiteForm && (
+                        <div className="nested-form">
+                          <div className="form-group">
+                            <label htmlFor="inline-name">Site Name <span className="required-asterisk">*</span></label>
+                            <input
+                              type="text"
+                              id="inline-name"
+                              name="name"
+                              value={siteForm.name}
+                              onChange={handleSiteInputChange}
+                              placeholder="Enter site name"
+                              required
+                              className={siteErrors.name ? 'error' : ''}
+                            />
+                            {siteErrors.name && <p className="error-text">{siteErrors.name}</p>}
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="inline-location">Location <span className="required-asterisk">*</span></label>
+                            <input
+                              type="text"
+                              id="inline-location"
+                              name="location"
+                              value={siteForm.location}
+                              onChange={handleSiteInputChange}
+                              placeholder="Country, Region"
+                              required
+                              className={siteErrors.location ? 'error' : ''}
+                            />
+                            {siteErrors.location && <p className="error-text">{siteErrors.location}</p>}
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="inline-experienceLevelId">Experience Level <span className="required-asterisk">*</span></label>
+                            <select
+                              id="inline-experienceLevelId"
+                              name="experienceLevelId"
+                              value={siteForm.experienceLevelId}
+                              onChange={handleSiteInputChange}
+                              required
+                              className={siteErrors.experienceLevelId ? 'error' : ''}
+                            >
+                              <option value="">Select experience level</option>
+                              {experienceLevels.map((level) => (
+                                <option key={level.id} value={level.id}>
+                                  {level.name}
+                                </option>
+                              ))}
+                            </select>
+                            {siteErrors.experienceLevelId && <p className="error-text">{siteErrors.experienceLevelId}</p>}
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="inline-description">Description</label>
+                            <textarea
+                              id="inline-description"
+                              name="description"
+                              value={siteForm.description}
+                              onChange={handleSiteInputChange}
+                              placeholder="Describe the dive site..."
+                              rows="3"
+                            />
+                          </div>
+
+                          <button
+                            type="button"
+                            className="submit-btn"
+                            onClick={async () => {
+                              const errors = {};
+                              if (!siteForm.name.trim()) errors.name = 'Name is required';
+                              if (!siteForm.location.trim()) errors.location = 'Location is required';
+                              if (!siteForm.experienceLevelId) errors.experienceLevelId = 'Experience level is required';
+                              setSiteErrors(errors);
+                              if (Object.keys(errors).length > 0) return;
+
+                              try {
+                                const newSite = await createDiveSite({
+                                  name: siteForm.name,
+                                  location: siteForm.location,
+                                  experienceLevelId: Number(siteForm.experienceLevelId),
+                                  description: siteForm.description || null,
+                                });
+                                setDiveSites((prev) => [...prev, newSite]);
+                                setSiteForm({ name: '', location: '', experienceLevelId: '', description: '' });
+                                setSiteErrors({});
+                                setShowInlineSiteForm(false);
+                                setDiveForm((prev) => ({ ...prev, diveSiteId: newSite.id?.toString() || '' }));
+                                setSiteSearch(newSite.name || '');
+                                setShowSiteDropdown(false);
+                                alert('Dive site added and selected');
+                              } catch (errNewSite) {
+                                console.error('Error adding dive site:', errNewSite);
+                                alert(`Failed to add dive site: ${errNewSite.message}`);
+                              }
+                            }}
+                            style={{ marginTop: '0.5rem' }}
+                          >
+                            Save new site
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="form-group">
+                        <label htmlFor="date">Date <span className="required-asterisk">*</span></label>
                         <input
                           type="date"
                           id="date"
@@ -209,39 +414,32 @@ function DiveLog() {
                           value={diveForm.date}
                           onChange={handleDiveInputChange}
                           required
+                          className={diveErrors.date ? 'error' : ''}
                         />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="site">Dive Site</label>
-                        <input
-                          type="text"
-                          id="site"
-                          name="site"
-                          value={diveForm.site}
-                          onChange={handleDiveInputChange}
-                          placeholder="Enter dive site name"
-                          required
-                        />
+                        {diveErrors.date && <p className="error-text">{diveErrors.date}</p>}
                       </div>
 
                       <div className="form-row">
                         <div className="form-group">
-                          <label htmlFor="depth">Max Depth (m)</label>
+                          <label htmlFor="maxDepth">Max Depth (m) <span className="required-asterisk">*</span></label>
                           <input
                             type="number"
-                            id="depth"
-                            name="depth"
-                            value={diveForm.depth}
+                            id="maxDepth"
+                            name="maxDepth"
+                            value={diveForm.maxDepth}
                             onChange={handleDiveInputChange}
                             placeholder="0"
-                            step="0.1"
+                            step="1"
+                            min="1"
+                            max="500"
                             required
+                            className={diveErrors.maxDepth ? 'error' : ''}
                           />
+                          {diveErrors.maxDepth && <p className="error-text">{diveErrors.maxDepth}</p>}
                         </div>
 
                         <div className="form-group">
-                          <label htmlFor="duration">Duration (min)</label>
+                          <label htmlFor="duration">Duration (min) <span className="required-asterisk">*</span></label>
                           <input
                             type="number"
                             id="duration"
@@ -249,36 +447,12 @@ function DiveLog() {
                             value={diveForm.duration}
                             onChange={handleDiveInputChange}
                             placeholder="0"
+                            min="1"
+                            step="1"
                             required
+                            className={diveErrors.duration ? 'error' : ''}
                           />
-                        </div>
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="temperature">Water Temp (°C)</label>
-                          <input
-                            type="number"
-                            id="temperature"
-                            name="temperature"
-                            value={diveForm.temperature}
-                            onChange={handleDiveInputChange}
-                            placeholder="0"
-                            step="0.1"
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label htmlFor="visibility">Visibility (m)</label>
-                          <input
-                            type="number"
-                            id="visibility"
-                            name="visibility"
-                            value={diveForm.visibility}
-                            onChange={handleDiveInputChange}
-                            placeholder="0"
-                            step="0.1"
-                          />
+                          {diveErrors.duration && <p className="error-text">{diveErrors.duration}</p>}
                         </div>
                       </div>
 

@@ -141,6 +141,67 @@
   gap: 1.5rem;
 }
 
+.combo-container {
+  position: relative;
+  width: 100%;
+}
+
+.combo-input {
+  width: 100%;
+}
+
+.combo-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.combo-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: block;
+}
+
+.combo-item:hover,
+.combo-item:focus {
+  background: #f0f8fb;
+}
+
+.combo-item-title {
+  color: #1f3b4d;
+  font-weight: 600;
+}
+
+.combo-item-sub {
+  color: #6b7c8a;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+.nested-form {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #f9fcfd;
+}
+
+.nested-form .form-group {
+  margin-bottom: 1rem;
+}
+
 .submit-btn {
   width: 100%;
   padding: 1rem;
