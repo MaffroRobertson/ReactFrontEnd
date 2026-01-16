@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Diving.css';
 import { login, fetchDives, fetchDiveSites, fetchExperienceLevels, createDiveSite, createDive } from '../utils/api';
-import { ListHeader, EmptyState, ComboBox, Card, CardGrid, FormField, FormRow } from '../components';
+import { ListHeader, EmptyState, ComboBox, Card, CardGrid, FormField, FormRow, DiveSiteForm, DiveForm } from '../components';
 
 function DiveLog() {
   const [dives, setDives] = useState([]);
@@ -270,188 +270,50 @@ function DiveLog() {
 
                 {showAddDiveForm && (
                   <div className="form-container" style={{ marginTop: '1.5rem' }}>
-                    <form onSubmit={handleDiveSubmit}>
-                      <FormField
-                        label="Dive Site"
-                        required
-                        error={diveErrors.diveSiteId}
-                        htmlFor="diveSiteId"
-                      >
-                        <div className="form-row" style={{ gridTemplateColumns: '1fr auto' }}>
-                          <ComboBox
-                            value={siteSearch}
-                            onChange={(val) => {
-                              setSiteSearch(val);
-                              setDiveForm((prev) => ({ ...prev, diveSiteId: '' }));
-                              if (diveErrors.diveSiteId) {
-                                setDiveErrors((prev) => ({ ...prev, diveSiteId: undefined }));
-                              }
-                            }}
-                            options={filteredDiveSites}
-                            onSelect={handleSiteSelect}
-                            placeholder="Search and select dive site..."
-                            getKey={(site) => site.id}
-                            getLabel={(site) => site.name}
-                            getSubLabel={(site) => site.location}
-                            error={diveErrors.diveSiteId}
-                            inputProps={{ id: 'diveSiteId', name: 'diveSiteId' }}
-                          />
-                          <button
-                            type="button"
-                            className="submit-btn"
-                            style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}
-                            onClick={() => setShowInlineSiteForm((prev) => !prev)}
-                          >
-                            {showInlineSiteForm ? 'Close new site' : 'Add new site'}
-                          </button>
-                        </div>
-                      </FormField>
-
-                      {showInlineSiteForm && (
-                        <div className="nested-form">
-                          <FormField
-                            label="Site Name"
-                            required
-                            htmlFor="inline-name"
-                            error={siteErrors.name}
-                          >
-                            <input
-                              type="text"
-                              id="inline-name"
-                              name="name"
-                              value={siteForm.name}
-                              onChange={handleSiteInputChange}
-                              placeholder="Enter site name"
-                              required
-                            />
-                          </FormField>
-
-                          <FormField
-                            label="Location"
-                            required
-                            htmlFor="inline-location"
-                            error={siteErrors.location}
-                          >
-                            <input
-                              type="text"
-                              id="inline-location"
-                              name="location"
-                              value={siteForm.location}
-                              onChange={handleSiteInputChange}
-                              placeholder="Country, Region"
-                              required
-                            />
-                          </FormField>
-
-                          <FormField
-                            label="Experience Level"
-                            required
-                            htmlFor="inline-experienceLevelId"
-                            error={siteErrors.experienceLevelId}
-                          >
-                            <select
-                              id="inline-experienceLevelId"
-                              name="experienceLevelId"
-                              value={siteForm.experienceLevelId}
-                              onChange={handleSiteInputChange}
-                              required
-                            >
-                              <option value="">Select experience level</option>
-                              {experienceLevels.map((level) => (
-                                <option key={level.id} value={level.id}>
-                                  {level.name}
-                                </option>
-                              ))}
-                            </select>
-                          </FormField>
-
-                          <FormField
-                            label="Description"
-                            htmlFor="inline-description"
-                          >
-                            <textarea
-                              id="inline-description"
-                              name="description"
-                              value={siteForm.description}
-                              onChange={handleSiteInputChange}
-                              placeholder="Describe the dive site..."
-                              rows="3"
-                            />
-                          </FormField>
-
-                          <button
-                            type="button"
-                            className="submit-btn"
-                            onClick={async () => {
-                              await validateAndSubmitSite((newSite) => {
-                                setShowInlineSiteForm(false);
-                                setDiveForm((prev) => ({ ...prev, diveSiteId: newSite.id?.toString() || '' }));
-                                setSiteSearch(newSite.name || '');
-                                alert('Dive site added and selected');
-                              });
-                            }}
-                            style={{ marginTop: '0.5rem' }}
-                          >
-                            Save new site
-                          </button>
-                        </div>
-                      )}
-
-                      <FormField label="Date" required htmlFor="date" error={diveErrors.date}>
-                        <input
-                          type="date"
-                          id="date"
-                          name="date"
-                          value={diveForm.date}
-                          onChange={handleDiveInputChange}
+                    <DiveForm
+                      values={diveForm}
+                      errors={diveErrors}
+                      onChange={handleDiveInputChange}
+                      onSubmit={handleDiveSubmit}
+                      submitLabel="Add Dive"
+                      siteSelector={(
+                        <FormField
+                          label="Dive Site"
                           required
-                        />
-                      </FormField>
-
-                      <FormRow>
-                        <FormField label="Max Depth (m)" required htmlFor="maxDepth" error={diveErrors.maxDepth}>
-                          <input
-                            type="number"
-                            id="maxDepth"
-                            name="maxDepth"
-                            value={diveForm.maxDepth}
-                            onChange={handleDiveInputChange}
-                            placeholder="0"
-                            step="1"
-                            min="1"
-                            max="500"
-                            required
-                          />
+                          error={diveErrors.diveSiteId}
+                          htmlFor="diveSiteId"
+                        >
+                          <div className="form-row" style={{ gridTemplateColumns: '1fr auto' }}>
+                            <ComboBox
+                              value={siteSearch}
+                              onChange={(val) => {
+                                setSiteSearch(val);
+                                setDiveForm((prev) => ({ ...prev, diveSiteId: '' }));
+                                if (diveErrors.diveSiteId) {
+                                  setDiveErrors((prev) => ({ ...prev, diveSiteId: undefined }));
+                                }
+                              }}
+                              options={filteredDiveSites}
+                              onSelect={handleSiteSelect}
+                              placeholder="Search and select dive site..."
+                              getKey={(site) => site.id}
+                              getLabel={(site) => site.name}
+                              getSubLabel={(site) => site.location}
+                              error={diveErrors.diveSiteId}
+                              inputProps={{ id: 'diveSiteId', name: 'diveSiteId' }}
+                            />
+                            <button
+                              type="button"
+                              className="submit-btn"
+                              style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}
+                              onClick={() => setShowInlineSiteForm((prev) => !prev)}
+                            >
+                              {showInlineSiteForm ? 'Close new site' : 'Add new site'}
+                            </button>
+                          </div>
                         </FormField>
-
-                        <FormField label="Duration (min)" required htmlFor="duration" error={diveErrors.duration}>
-                          <input
-                            type="number"
-                            id="duration"
-                            name="duration"
-                            value={diveForm.duration}
-                            onChange={handleDiveInputChange}
-                            placeholder="0"
-                            min="1"
-                            step="1"
-                            required
-                          />
-                        </FormField>
-                      </FormRow>
-
-                      <FormField label="Notes" htmlFor="notes">
-                        <textarea
-                          id="notes"
-                          name="notes"
-                          value={diveForm.notes}
-                          onChange={handleDiveInputChange}
-                          placeholder="Add any notes about the dive..."
-                          rows="4"
-                        />
-                      </FormField>
-
-                      <button type="submit" className="submit-btn">Add Dive</button>
-                    </form>
+                      )}
+                    />
                   </div>
                 )}
 
@@ -494,66 +356,14 @@ function DiveLog() {
 
                 {showAddSiteForm && (
                   <div className="form-container" style={{ marginTop: '1.5rem' }}>
-                    <form onSubmit={handleSiteSubmit}>
-                      <FormField label="Site Name" required htmlFor="name" error={siteErrors.name}>
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          value={siteForm.name}
-                          onChange={handleSiteInputChange}
-                          placeholder="Enter site name"
-                          required
-                        />
-                      </FormField>
-
-                      <FormField label="Location" required htmlFor="location" error={siteErrors.location}>
-                        <input
-                          type="text"
-                          id="location"
-                          name="location"
-                          value={siteForm.location}
-                          onChange={handleSiteInputChange}
-                          placeholder="Country, Region"
-                          required
-                        />
-                      </FormField>
-
-                      <FormField
-                        label="Experience Level"
-                        required
-                        htmlFor="experienceLevelId"
-                        error={siteErrors.experienceLevelId}
-                      >
-                        <select
-                          id="experienceLevelId"
-                          name="experienceLevelId"
-                          value={siteForm.experienceLevelId}
-                          onChange={handleSiteInputChange}
-                          required
-                        >
-                          <option value="">Select experience level</option>
-                          {experienceLevels.map((level) => (
-                            <option key={level.id} value={level.id}>
-                              {level.name}
-                            </option>
-                          ))}
-                        </select>
-                      </FormField>
-
-                      <FormField label="Description" htmlFor="description">
-                        <textarea
-                          id="description"
-                          name="description"
-                          value={siteForm.description}
-                          onChange={handleSiteInputChange}
-                          placeholder="Describe the dive site..."
-                          rows="4"
-                        />
-                      </FormField>
-
-                      <button type="submit" className="submit-btn">Add Dive Site</button>
-                    </form>
+                    <DiveSiteForm
+                      values={siteForm}
+                      errors={siteErrors}
+                      experienceLevels={experienceLevels}
+                      onChange={handleSiteInputChange}
+                      onSubmit={handleSiteSubmit}
+                      submitLabel="Add Dive Site"
+                    />
                   </div>
                 )}
 
