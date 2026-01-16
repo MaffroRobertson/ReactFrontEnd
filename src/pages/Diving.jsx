@@ -23,7 +23,7 @@ function Diving() {
         </Card>
       </header>
 
-      <section className="grid">
+      <section>
         <CardGrid className="grid">
           {highlights.map((section) => (
             <Card key={section.title} title={section.title}>
@@ -37,7 +37,7 @@ function Diving() {
         </CardGrid>
       </section>
 
-      <section className="split">
+      <section>
         <CardGrid className="split">
           <Card title="Kit I rely on">
             <ul>
