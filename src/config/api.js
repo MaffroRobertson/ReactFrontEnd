@@ -11,4 +11,5 @@ export const API_ENDPOINTS = {
   login: withBase('/login'),
   dives: withBase('/dives'),
   diveSites: withBase('/divesites'),
+  experienceLevels: withBase('/experiencelevels')
 };

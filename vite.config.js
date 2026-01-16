@@ -18,6 +18,10 @@ export default defineConfig({
         target: 'http://localhost:5093',
         changeOrigin: true,
       },
-    },
-  },
+      '/experiencelevels': {
+        target: 'http://localhost:5093',
+        changeOrigin: true,
+      }
+    }
+  }
 })

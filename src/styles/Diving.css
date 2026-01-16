@@ -77,7 +77,8 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   padding: 0.8rem;
   border: 2px solid #e0e0e0;
@@ -88,9 +89,50 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--ocean-aqua);
+}
+
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.form-group select {
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #5fb8d1 50%),
+    linear-gradient(135deg, #5fb8d1 50%, transparent 50%),
+    linear-gradient(to right, #cfdce3, #cfdce3);
+  background-position: calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px),
+    calc(100% - 40px) 50%;
+  background-size: 10px 10px, 10px 10px, 1px 60%;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.form-group select:hover {
+  border-color: var(--ocean-light-aqua);
+}
+
+.required-asterisk {
+  color: #dc3545;
+  margin-left: 0.2rem;
+  font-weight: 700;
+}
+
+.error-text {
+  color: #dc3545;
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
 }
 
 .form-row {
@@ -121,6 +163,15 @@
   color: var(--ocean-aqua);
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .empty-state {
