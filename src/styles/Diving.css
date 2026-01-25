@@ -1,6 +1,5 @@
 @import './diving-layout.css';
 @import './forms.css';
-@import './cards.css';
 
 .required-asterisk {
   color: #dc3545;
