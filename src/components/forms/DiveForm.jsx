@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormField, FormRow } from '../index';
 
-function DiveForm({ values, errors = {}, onChange, onSubmit, siteSelector, submitLabel = 'Add Dive' }) {
+function DiveForm({ values, errors = {}, onChange, onSubmit, siteSelector, submitLabel = 'Add Dive', onDelete, onCancel }) {
   return (
     <form onSubmit={onSubmit}>
       {siteSelector}
@@ -59,7 +59,22 @@ function DiveForm({ values, errors = {}, onChange, onSubmit, siteSelector, submi
         />
       </FormField>
 
-      <button type="submit" className="submit-btn">{submitLabel}</button>
+      <div className="form-actions">
+        {onDelete && (
+          <button type="button" className="delete-btn" onClick={onDelete}>
+            Delete dive
+          </button>
+        )}
+
+        <div className="action-buttons">
+          {onCancel && (
+            <button type="button" className="secondary-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          )}
+          <button type="submit" className="submit-btn">{submitLabel}</button>
+        </div>
+      </div>
     </form>
   );
 }
