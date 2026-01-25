@@ -8,6 +8,8 @@ function DiveSiteForm({
   onChange,
   onSubmit,
   submitLabel = 'Save',
+  onDelete,
+  onCancel,
 }) {
   return (
     <form onSubmit={onSubmit}>
@@ -67,8 +69,22 @@ function DiveSiteForm({
           rows="4"
         />
       </FormField>
+      <div className="form-actions">
+        {onDelete && (
+          <button type="button" className="delete-btn" onClick={onDelete}>
+            Delete dive site
+          </button>
+        )}
 
-      <button type="submit" className="submit-btn">{submitLabel}</button>
+        <div className="action-buttons">
+          {onCancel && (
+            <button type="button" className="secondary-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          )}
+          <button type="submit" className="submit-btn">{submitLabel}</button>
+        </div>
+      </div>
     </form>
   );
 }

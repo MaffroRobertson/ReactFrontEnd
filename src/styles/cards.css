@@ -1,0 +1,73 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+
+.dive-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid #e0e0e0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--ocean-aqua);
+}
+
+.dive-card h3 {
+  color: var(--ocean-aqua);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.card.has-actions {
+  position: relative;
+  padding-bottom: 3.5rem;
+}
+
+.card-actions {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.card-actions .secondary-btn,
+.card-actions .delete-btn {
+  width: auto;
+  padding: 0.45rem 0.5rem;
+}
+
+.icon-btn {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.dive-details p {
+  margin-bottom: 0.5rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.dive-details strong {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
