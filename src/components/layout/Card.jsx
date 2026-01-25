@@ -9,7 +9,7 @@ function Card({ title, subtitle, className = '', children, footer, actions }) {
     <div className={classes}>
       {(title || subtitle) && (
         <div className="card-header">
-          {title && <h3>{title}</h3>}
+          {title && <HeadingTag>{title}</HeadingTag>}
           {subtitle && <p className="card-subtitle">{subtitle}</p>}
         </div>
       )}
